@@ -1,0 +1,127 @@
+Table "Categories" {
+  "CategoryID" INTEGER [primary key]
+  "CategoryName" TEXT
+  "Description" TEXT
+  "Picture" BLOB
+}
+Table "CustomerCustomerDemo" {
+  "CustomerID" TEXT [primary key, not null]
+  "CustomerTypeID" TEXT [primary key, not null]
+}
+Table "CustomerDemographics" {
+  "CustomerTypeID" TEXT [primary key, not null]
+  "CustomerDesc" TEXT
+}
+Table "Customers" {
+  "CustomerID" TEXT [primary key]
+  "CompanyName" TEXT
+  "ContactName" TEXT
+  "ContactTitle" TEXT
+  "Address" TEXT
+  "City" TEXT
+  "Region" TEXT
+  "PostalCode" TEXT
+  "Country" TEXT
+  "Phone" TEXT
+  "Fax" TEXT
+}
+Table "EmployeeTerritories" {
+  "EmployeeID" INTEGER [primary key, not null]
+  "TerritoryID" TEXT [primary key, not null]
+}
+Table "Employees" {
+  "EmployeeID" INTEGER [primary key]
+  "LastName" TEXT
+  "FirstName" TEXT
+  "Title" TEXT
+  "TitleOfCourtesy" TEXT
+  "BirthDate" DATE
+  "HireDate" DATE
+  "Address" TEXT
+  "City" TEXT
+  "Region" TEXT
+  "PostalCode" TEXT
+  "Country" TEXT
+  "HomePhone" TEXT
+  "Extension" TEXT
+  "Photo" BLOB
+  "Notes" TEXT
+  "ReportsTo" INTEGER
+  "PhotoPath" TEXT
+}
+Table "Order Details" {
+  "OrderID" INTEGER [primary key, not null]
+  "ProductID" INTEGER [primary key, not null]
+  "UnitPrice" NUMERIC [not null, default: 0]
+  "Quantity" INTEGER [not null, default: 1]
+  "Discount" REAL [not null, default: 0]
+}
+Table "Orders" {
+  "OrderID" INTEGER [primary key, not null]
+  "CustomerID" TEXT
+  "EmployeeID" INTEGER
+  "OrderDate" DATETIME
+  "RequiredDate" DATETIME
+  "ShippedDate" DATETIME
+  "ShipVia" INTEGER
+  "Freight" NUMERIC [default: 0]
+  "ShipName" TEXT
+  "ShipAddress" TEXT
+  "ShipCity" TEXT
+  "ShipRegion" TEXT
+  "ShipPostalCode" TEXT
+  "ShipCountry" TEXT
+}
+Table "Products" {
+  "ProductID" INTEGER [primary key, not null]
+  "ProductName" TEXT [not null]
+  "SupplierID" INTEGER
+  "CategoryID" INTEGER
+  "QuantityPerUnit" TEXT
+  "UnitPrice" NUMERIC [default: 0]
+  "UnitsInStock" INTEGER [default: 0]
+  "UnitsOnOrder" INTEGER [default: 0]
+  "ReorderLevel" INTEGER [default: 0]
+  "Discontinued" TEXT [not null, default: '0']
+}
+Table "Regions" {
+  "RegionID" INTEGER [primary key, not null]
+  "RegionDescription" TEXT [not null]
+}
+Table "Shippers" {
+  "ShipperID" INTEGER [primary key, not null]
+  "CompanyName" TEXT [not null]
+  "Phone" TEXT
+}
+Table "Suppliers" {
+  "SupplierID" INTEGER [primary key, not null]
+  "CompanyName" TEXT [not null]
+  "ContactName" TEXT
+  "ContactTitle" TEXT
+  "Address" TEXT
+  "City" TEXT
+  "Region" TEXT
+  "PostalCode" TEXT
+  "Country" TEXT
+  "Phone" TEXT
+  "Fax" TEXT
+  "HomePage" TEXT
+}
+Table "Territories" {
+  "TerritoryID" TEXT [primary key, not null]
+  "TerritoryDescription" TEXT [not null]
+  "RegionID" INTEGER [not null]
+}
+Ref: "CustomerCustomerDemo"."CustomerTypeID" > "CustomerDemographics"."CustomerTypeID"
+Ref: "CustomerCustomerDemo"."CustomerID" > "Customers"."CustomerID"
+Ref: "EmployeeTerritories"."TerritoryID" > "Territories"."TerritoryID"
+Ref: "EmployeeTerritories"."EmployeeID" > "Employees"."EmployeeID"
+Ref: "Employees"."ReportsTo" > "Employees"."EmployeeID"
+Ref: "Order Details"."ProductID" > "Products"."ProductID"
+Ref: "Order Details"."OrderID" > "Orders"."OrderID"
+Ref: "Orders"."ShipVia" > "Shippers"."ShipperID"
+Ref: "Orders"."CustomerID" > "Customers"."CustomerID"
+Ref: "Orders"."EmployeeID" > "Employees"."EmployeeID"
+Ref: "Products"."SupplierID" > "Suppliers"."SupplierID"
+Ref: "Products"."CategoryID" > "Categories"."CategoryID"
+Ref: "Territories"."RegionID" > "Regions"."RegionID"

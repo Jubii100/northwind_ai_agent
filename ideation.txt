@@ -1,0 +1,78 @@
+ORCHESTRATOR AGENT:
+    1. Requirement Parser Node:
+        Utility:
+            useful constraints + expected answer (date ranges, KPI formula, categories/entities and thier relationships).
+            Basically a useful ontological breakdown of needed pieces of info for the expected final answer from the natural language query.
+        Output:
+            Ontological blocks with tags (RAG or SQL or both)
+            Expected final answer
+
+    2. Router Node (DSPy classifier encouraged): rag | sql | hybrid:
+        Utility:
+            Simple classification of the suitable approach (RAG, SQL, or Both) based on the output from the Requirement Parser node
+        Output:
+            Suitable approach (one of RAG, SQL, Hybrid)
+    3.  Assembler Node:
+        Utility:
+            Assembles outputs from the advised approach
+        Output:
+            Assembled results
+
+RAG AGENT:
+    1. RAG Graph Distiller Node:
+        Utility:
+            Creates a compact graph representation of the documents based on the relevant Requirement Parser output.
+        Output:
+            Necessary documents graph representation
+            Potential tags for similarity search within the narrowed graph sphere
+
+    2. RAG Retriever Node: top-k doc chunks + scores (include chunk IDs):
+        Utility:
+            Performs similarity indexing for the narrowed graph sphere
+        Output:
+            top-k doc chunks + scores (include chunk IDs)
+
+SQL AGENT:
+    1. SQL Graph Pruner Node:
+        Utility:
+            Prune out all unnecessary tables, columns, and Refs from the "northwind_dbdiagram.txt"
+        Output:
+            A reduced graphical representation, that adheres to the general format of "northwind_dbdiagram.txt".
+
+    2. SQL Generator Node (DSPy):
+        Utility:
+            generate SQLite queries using relevant outputs from Requirement Parser and SQL Graph Pruner
+        Output:
+            SQL query
+
+    3. SQL Executor Node:
+        Utility:
+            runs the SQL query from SQL Generator (DSPy); captures results (columns, rows, error)
+        Output:
+            SQL query results
+
+ANSWER SYNTHESIZER AGENT
+    1. Synthesizer Node (DSPy):
+        Utility:
+            Based on the output from the 
+        Output:
+            typed answer matching format_hint, with citations
+
+
+LangGraph Edges:
+    Start --> ORCHESTRATOR AGENT
+    Router --> (RAG AGENT, SQL AGENT)
+    (RAG AGENT, SQL AGENT) --> Assembler
+    Assembler --> ANSWER SYNTHESIZER AGENT
+
+Repair loops (required):
+    on SQL error:
+        The repair procedure should loop back only to the SQL Executor (not from the beginning of the workflow)
+    wrong/invalid output/citations:
+        The repair procedure should loop back to the plausible culprit (RAG AGENT, SQL AGENT, or Both)
+        Each agent should have a parallel repair rout (that uses the output of each node from the previous failed attempt as an input to the same the same corresponding node, along with the final error description as well)
+    revise up to 2x
+
+Checkpointer/trace:
+    log each prompt and the received output under within a separate .log file under logs folder
+    printed logs for node progression

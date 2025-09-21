@@ -1,0 +1,58 @@
+{
+  "timestamp": "20250921_234635_623385",
+  "component": "SQLGenerator",
+  "prompt": {
+    "instruction": "Use ONLY schema_info. No new tables/columns. Use exact quoted names from schema_info including spaces. Return valid SQLite only. For table names with spaces use quotes like Order Details table name. Never invent columns or aliases. Prefer strftime for year extraction. expected_columns must match SELECT aliases exactly.",
+    "question": "What is the total revenue in 2013?",
+    "schema_info": "Table \"Categories\" {\n  \"CategoryID\" INTEGER [primary key]\n  \"CategoryName\" TEXT\n  \"Description\" TEXT\n  \"Picture\" BLOB\n}\nTable \"Products\".\"ProductID\" > \"Categories\".\"CategoryID\"\nTable \"Order Details\".\"ProductID\" > \"Products\".\"ProductID\"\nTable \"Orders\".\"CustomerID\" > \"Customers\".\"CustomerID\"\nTable \"Employees\".\"EmployeeID\" > \"Employees\".\"EmployeeID\"\nRef: \"Order Details\".\"OrderID\" > \"Orders\".\"OrderID\"\nRef: \"Products\".\"SupplierID\" > \"Suppliers\".\"SupplierID\"",
+    "ontological_blocks": [
+      {
+        "content": "Categories, ProductID, OrderDetails, Orders, CustomerCustomerDemo, EmployeeTerritories, Employees, Suppliers, Territories",
+        "tags": [
+          "database tables",
+          "relationships"
+        ]
+      },
+      {
+        "content": "Average Order Value (AOV), Gross Margin formulas",
+        "tags": [
+          "KPI definitions",
+          "formulas"
+        ]
+      },
+      {
+        "content": "[1997-06-01 to 1997-06-30] Summer Beverages, [1997-12-01 to 1997-12-31] Winter Classics",
+        "tags": [
+          "date ranges"
+        ]
+      },
+      {
+        "content": "[Categories: 'Beverages', ProductID], ['Dairy Products']",
+        "tags": [
+          "categories_entities"
+        ]
+      }
+    ],
+    "previous_sql": "SELECT SUM(OrderDetails.Quantity * Products.Price) AS TotalRevenue FROM Order Details INNER JOIN Orders ON Order Details.OrderID = Orders.OrderID INNER JOIN Products ON Order Details.ProductID = Products.ProductID WHERE strftForms('Orders'.\"OrderDate\", 'YYYY') = 2013 GROUP BY YEAR(strFormats('Orders'.\"OrderDate\", '%Y'))",
+    "error_message": "Validation failed: near \"Order\": syntax error",
+    "schema": {
+      "sql_query": "string",
+      "explanation": "string",
+      "expected_columns": [
+        "string"
+      ]
+    }
+  },
+  "response": {
+    "raw": [
+      "```json\n{\n  \"sql_query\": \"SELECT SUM(OrderDetails.Quantity * Products.Price) AS TotalRevenue FROM \\\"Order Details\\\" INNER JOIN \\\"Orders\\\" ON \\\"Order Details\\\".\\\"OrderID\\\" = \\\"Orders\\\".\\\"OrderID\\\" INNER JOIN \\\"Products\\\" ON \\\"Order Details\\\".\\\"ProductID\\\" = \\\"Products\\\".\\\"ProductID\\\" WHERE strftime('%Y', Orders.\\\"OrderDate\\\") = '2013' GROUP BY YEAR(strftime('%Y', Orders.\\\"OrderDate\\\"))\",\n  \"explanation\": \"This query calculates the total revenue for the year 2013 by summing up the product of quantity and price from each order detail record, joining it with orders to get the corresponding date.\",\n  \"expected_columns\": [\n    \"TotalRevenue\"\n  ]\n}\n```\n"
+    ],
+    "parsed": {
+      "sql_query": "SELECT SUM(OrderDetails.Quantity * Products.Price) AS TotalRevenue FROM \"Order Details\" INNER JOIN \"Orders\" ON \"Order Details\".\"OrderID\" = \"Orders\".\"OrderID\" INNER JOIN \"Products\" ON \"Order Details\".\"ProductID\" = \"Products\".\"ProductID\" WHERE strftime('%Y', Orders.\"OrderDate\") = '2013' GROUP BY YEAR(strftime('%Y', Orders.\"OrderDate\"))",
+      "explanation": "This query calculates the total revenue for the year 2013 by summing up the product of quantity and price from each order detail record, joining it with orders to get the corresponding date.",
+      "expected_columns": [
+        "TotalRevenue"
+      ]
+    }
+  }
+}

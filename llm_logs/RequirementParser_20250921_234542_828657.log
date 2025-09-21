@@ -1,0 +1,87 @@
+{
+  "timestamp": "20250921_234542_828657",
+  "component": "RequirementParser",
+  "prompt": {
+    "instruction": "Extract useful ontological blocks to achieve the required answer from the database and documents, expected answer type, and constraints.",
+    "question": "What is the total revenue in 2013?",
+    "format_hint": "float",
+    "db_diagram": "Table \"Categories\" {\n  \"CategoryID\" INTEGER [primary key]\n  \"CategoryName\" TEXT\n  \"Description\" TEXT\n  \"Picture\" BLOB\n}\nTable \"CustomerCustomerDemo\" {\n  \"CustomerID\" TEXT [primary key, not null]\n  \"CustomerTypeID\" TEXT [primary key, not null]\n}\nTable \"CustomerDemographics\" {\n  \"CustomerTypeID\" TEXT [primary key, not null]\n  \"CustomerDesc\" TEXT\n}\nTable \"Customers\" {\n  \"CustomerID\" TEXT [primary key]\n  \"CompanyName\" TEXT\n  \"ContactName\" TEXT\n  \"ContactTitle\" TEXT\n  \"Address\" TEXT\n  \"City\" TEXT\n  \"Region\" TEXT\n  \"PostalCode\" TEXT\n  \"Country\" TEXT\n  \"Phone\" TEXT\n  \"Fax\" TEXT\n}\nTable \"EmployeeTerritories\" {\n  \"EmployeeID\" INTEGER [primary key, not null]\n  \"TerritoryID\" TEXT [primary key, not null]\n}\nTable \"Employees\" {\n  \"EmployeeID\" INTEGER [primary key]\n  \"LastName\" TEXT\n  \"FirstName\" TEXT\n  \"Title\" TEXT\n  \"TitleOfCourtesy\" TEXT\n  \"BirthDate\" DATE\n  \"HireDate\" DATE\n  \"Address\" TEXT\n  \"City\" TEXT\n  \"Region\" TEXT\n  \"PostalCode\" TEXT\n  \"Country\" TEXT\n  \"HomePhone\" TEXT\n  \"Extension\" TEXT\n  \"Photo\" BLOB\n  \"Notes\" TEXT\n  \"ReportsTo\" INTEGER\n  \"PhotoPath\" TEXT\n}\nTable \"Order Details\" {\n  \"OrderID\" INTEGER [primary key, not null]\n  \"ProductID\" INTEGER [primary key, not null]\n  \"UnitPrice\" NUMERIC [not null, default: 0]\n  \"Quantity\" INTEGER [not null, default: 1]\n  \"Discount\" REAL [not null, default: 0]\n}\nTable \"Orders\" {\n  \"OrderID\" INTEGER [primary key, not null]\n  \"CustomerID\" TEXT\n  \"EmployeeID\" INTEGER\n  \"OrderDate\" DATETIME\n  \"RequiredDate\" DATETIME\n  \"ShippedDate\" DATETIME\n  \"ShipVia\" INTEGER\n  \"Freight\" NUMERIC [default: 0]\n  \"ShipName\" TEXT\n  \"ShipAddress\" TEXT\n  \"ShipCity\" TEXT\n  \"ShipRegion\" TEXT\n  \"ShipPostalCode\" TEXT\n  \"ShipCountry\" TEXT\n}\nTable \"Products\" {\n  \"ProductID\" INTEGER [primary key, not null]\n  \"ProductName\" TEXT [not null]\n  \"SupplierID\" INTEGER\n  \"CategoryID\" INTEGER\n  \"QuantityPerUnit\" TEXT\n  \"UnitPrice\" NUMERIC [default: 0]\n  \"UnitsInStock\" INTEGER [default: 0]\n  \"UnitsOnOrder\" INTEGER [default: 0]\n  \"ReorderLevel\" INTEGER [default: 0]\n  \"Discontinued\" TEXT [not null, default: '0']\n}\nTable \"Regions\" {\n  \"RegionID\" INTEGER [primary key, not null]\n  \"RegionDescription\" TEXT [not null]\n}\nTable \"Shippers\" {\n  \"ShipperID\" INTEGER [primary key, not null]\n  \"CompanyName\" TEXT [not null]\n  \"Phone\" TEXT\n}\nTable \"Suppliers\" {\n  \"SupplierID\" INTEGER [primary key, not null]\n  \"CompanyName\" TEXT [not null]\n  \"ContactName\" TEXT\n  \"ContactTitle\" TEXT\n  \"Address\" TEXT\n  \"City\" TEXT\n  \"Region\" TEXT\n  \"PostalCode\" TEXT\n  \"Country\" TEXT\n  \"Phone\" TEXT\n  \"Fax\" TEXT\n  \"HomePage\" TEXT\n}\nTable \"Territories\" {\n  \"TerritoryID\" TEXT [primary key, not null]\n  \"TerritoryDescription\" TEXT [not null]\n  \"RegionID\" INTEGER [not null]\n}\nRef: \"CustomerCustomerDemo\".\"CustomerTypeID\" > \"CustomerDemographics\".\"CustomerTypeID\"\nRef: \"CustomerCustomerDemo\".\"CustomerID\" > \"Customers\".\"CustomerID\"\nRef: \"EmployeeTerritories\".\"TerritoryID\" > \"Territories\".\"TerritoryID\"\nRef: \"EmployeeTerritories\".\"EmployeeID\" > \"Employees\".\"EmployeeID\"\nRef: \"Employees\".\"ReportsTo\" > \"Employees\".\"EmployeeID\"\nRef: \"Order Details\".\"ProductID\" > \"Products\".\"ProductID\"\nRef: \"Order Details\".\"OrderID\" > \"Orders\".\"OrderID\"\nRef: \"Orders\".\"ShipVia\" > \"Shippers\".\"ShipperID\"\nRef: \"Orders\".\"CustomerID\" > \"Customers\".\"CustomerID\"\nRef: \"Orders\".\"EmployeeID\" > \"Employees\".\"EmployeeID\"\nRef: \"Products\".\"SupplierID\" > \"Suppliers\".\"SupplierID\"\nRef: \"Products\".\"CategoryID\" > \"Categories\".\"CategoryID\"\nRef: \"Territories\".\"RegionID\" > \"Regions\".\"RegionID\"",
+    "docs_overview": "File: catalog.md\n# Catalog Snapshot\n- Categories include Beverages, Condiments, Confections, Dairy Products, Grains/Cereals, Meat/Poultry, Produce, Seafood.\n- Products map to categories as in the Northwind DB.\n\n\n---\n\nFile: kpi_definitions.md\n# KPI Definitions\n## Average Order Value (AOV)\n- AOV = SUM(UnitPrice * Quantity * (1 - Discount)) / COUNT(DISTINCT OrderID)\n\n## Gross Margin\n- GM = SUM((UnitPrice - CostOfGoods) * Quantity * (1 - Discount))\n- If cost is missing, approximate with category-level average (document your approach).\n\n\n---\n\nFile: marketing_calendar.md\n# Northwind Marketing Calendar (1997)\n\n## Summer Beverages 1997\n- Dates: 1997-06-01 to 1997-06-30\n- Notes: Focus on Beverages and Condiments.\n\n## Winter Classics 1997\n- Dates: 1997-12-01 to 1997-12-31\n- Notes: Push Dairy Products and Confections for holiday gifting.\n\n\n---\n\nFile: product_policy.md\n# Returns & Policy\n- Perishables (Produce, Seafood, Dairy): 3–7 days.\n- Beverages unopened: 14 days; opened: no returns.\n- Non-perishables: 30 days.\n",
+    "schema": {
+      "ontological_blocks": [
+        {
+          "content": "string",
+          "tags": [
+            "string"
+          ]
+        }
+      ],
+      "expected_answer_type": "string",
+      "date_ranges": [
+        "string"
+      ],
+      "kpi_formulas": [
+        "string"
+      ],
+      "categories_entities": [
+        {
+          "content": "string",
+          "tags": [
+            "string"
+          ]
+        }
+      ]
+    }
+  },
+  "response": {
+    "raw": [
+      "{\n  \"ontological_blocks\": [\n    {\n      \"content\": \"Categories, ProductID, OrderDetails, Orders, CustomerCustomerDemo, EmployeeTerritories, Employees, Suppliers, Territories\",\n      \"tags\": [\"database tables\", \"relationships\"]\n    },\n    {\n      \"content\": \"Average Order Value (AOV), Gross Margin formulas\",\n      \"tags\": [\"KPI definitions\", \"formulas\"]\n    },\n    {\n      \"content\": \"[1997-06-01 to 1997-06-30] Summer Beverages, [1997-12-01 to 1997-12-31] Winter Classics\",\n      \"tags\": [\"date ranges\"]\n    },\n    {\n      \"content\": \"[Categories: 'Beverages', ProductID], ['Dairy Products']\",\n      \"tags\": [\"categories_entities\"]\n    }\n  ],\n  \"expected_answer_type\": \"float\",\n  \"date_ranges\": [\n    \"1997-06-01 to 1997-06-30\"\n  ],\n  \"kpi_formulas\": [\n    \"AOV = SUM(UnitPrice * Quantity * (1 - Discount)) / COUNT(DISTINCT OrderID)\",\n    \"GM = SUM((UnitPrice - CostOfGoods) * Quantity * (1 - Discount))\"\n  ],\n  \"categories_entities\": [\n    {\n      \"content\": \"Beverages, Dairy Products\",\n      \"tags\": [\"Categories\"]\n    }\n  ]\n}\n"
+    ],
+    "parsed": {
+      "ontological_blocks": [
+        {
+          "content": "Categories, ProductID, OrderDetails, Orders, CustomerCustomerDemo, EmployeeTerritories, Employees, Suppliers, Territories",
+          "tags": [
+            "database tables",
+            "relationships"
+          ]
+        },
+        {
+          "content": "Average Order Value (AOV), Gross Margin formulas",
+          "tags": [
+            "KPI definitions",
+            "formulas"
+          ]
+        },
+        {
+          "content": "[1997-06-01 to 1997-06-30] Summer Beverages, [1997-12-01 to 1997-12-31] Winter Classics",
+          "tags": [
+            "date ranges"
+          ]
+        },
+        {
+          "content": "[Categories: 'Beverages', ProductID], ['Dairy Products']",
+          "tags": [
+            "categories_entities"
+          ]
+        }
+      ],
+      "expected_answer_type": "float",
+      "date_ranges": [
+        "1997-06-01 to 1997-06-30"
+      ],
+      "kpi_formulas": [
+        "AOV = SUM(UnitPrice * Quantity * (1 - Discount)) / COUNT(DISTINCT OrderID)",
+        "GM = SUM((UnitPrice - CostOfGoods) * Quantity * (1 - Discount))"
+      ],
+      "categories_entities": [
+        {
+          "content": "Beverages, Dairy Products",
+          "tags": [
+            "Categories"
+          ]
+        }
+      ]
+    }
+  }
+}
