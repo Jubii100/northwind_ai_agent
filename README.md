@@ -85,13 +85,6 @@ agent = HybridAgent(
     model_name=MODEL_NAME,
 )
 
-print('Agent ready.')
-```
-
-**Output:**
-```
-Error loading schema: near "Order": syntax error
-Agent ready.
 ```
 
 ### Helper Function
