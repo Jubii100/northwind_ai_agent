@@ -1,17 +1,68 @@
-dspy-ai>=2.4.0
-langgraph>=0.2.30
-langchain-core>=0.2.0
-pydantic>=2.0.0
-click>=8.1.7
-rich>=13.7.0
-numpy>=1.26.0
-pandas>=2.2.0
-scikit-learn>=1.3.0
-rank-bm25>=0.2.2
-matplotlib>=3.7.0
-networkx>=3.1
-graphviz>=0.20.1
-seaborn>=0.12.0
-plotly>=5.15.0
-ipywidgets>=8.0.0
-pyppeteer>=2.0.0
+# Core AI/ML Framework
+dspy-ai==3.0.3
+langgraph==0.6.7
+langchain-core==0.3.76
+langgraph-checkpoint==2.1.1
+langgraph-prebuilt==0.6.4
+langgraph-sdk==0.2.9
+langsmith==0.4.29
+
+# Data Processing & Analysis
+pandas==2.3.2
+numpy==2.3.3
+scikit-learn==1.7.1
+scipy==1.16.1
+
+# Validation & Serialization
+pydantic==2.11.7
+pydantic-core==2.33.2
+
+# CLI & UI
+click==8.2.1
+rich==13.9.4
+ipywidgets==8.1.7
+jupyterlab-widgets==3.0.15
+widgetsnbextension==4.0.14
+
+# Search & Retrieval
+rank-bm25==0.2.2
+
+# Visualization
+matplotlib==3.10.6
+seaborn==0.13.2
+plotly==6.3.0
+networkx==3.5
+graphviz==13.1.2
+python-graphviz==0.21
+pygraphviz==1.14
+
+# Web & Automation
+pyppeteer==2.0.0
+requests==2.32.5
+httpx==0.28.1
+httpcore==1.0.9
+
+# LLM Integration
+openai==1.108.1
+tiktoken==0.11.0
+tokenizers==0.22.1
+huggingface-hub==0.35.0
+
+# Utilities
+python-dotenv==1.1.1
+pyyaml==6.0.2
+tqdm==4.67.1
+regex==2025.9.18
+orjson==3.11.3
+jsonschema==4.25.0
+json-repair==0.51.0
+
+# Jupyter Environment
+jupyterlab==4.4.7
+jupyter==1.0.0
+notebook==7.0.0
+ipython==9.1.0
+ipykernel==6.30.1
+
+# Database
+sqlalchemy==2.0.43
