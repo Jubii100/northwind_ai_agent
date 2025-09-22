@@ -1,0 +1,32 @@
+{
+  "timestamp": "20250922_122037_967355",
+  "component": "SQLGenerator",
+  "prompt": {
+    "instruction": "Generate valid SQLite SQL using ONLY the exact table/column names from schema_info. RULES: 1) Quote table names with spaces: \"Order Details\" 2) Use Products.UnitPrice not Price 3) Use od.Quantity * od.UnitPrice for revenue calculations 4) Use strftime('%Y', date_col) = 'YYYY' for year filtering 5) No GROUP BY for simple SUM. Return clean SQL without code blocks.",
+    "question": "List products where UnitsInStock + UnitsOnOrder < ReorderLevel. Return list[{product:str}].",
+    "schema_info": "Table \"Order Details\" {\n  \"OrderID\" INTEGER [primary key, not null]\n  \"ProductID\" INTEGER [primary key, not null]\n  \"UnitPrice\" NUMERIC [not null, default: 0]\n  \"Quantity\" INTEGER [not null, default: 1]\n  \"Discount\" REAL [not null, default: 0]\n}\nTable \"Orders\" {\n  \"OrderID\" INTEGER [primary key, not null]\n  \"CustomerID\" TEXT\n  \"EmployeeID\" INTEGER\n  \"OrderDate\" DATETIME\n}",
+    "ontological_blocks": [],
+    "previous_sql": "",
+    "error_message": "No SQL query generated",
+    "schema": {
+      "sql_query": "string",
+      "explanation": "string",
+      "expected_columns": [
+        "string"
+      ]
+    }
+  },
+  "response": {
+    "raw": [
+      "```json\n{\n  \"sql_query\": \"SELECT ProductID, UnitPrice FROM \\\"Order Details\\\" WHERE Quantity * UnitPrice + (SELECT COALESCE(SUM(od.UnitsInStock), 0) + SUM(od.UnitsOnOrder) FROM Orders o JOIN OrderDetails od ON o.OrderID = od.OrderID GROUP BY ProductID HAVING SUM(Quantity * UnitPrice) < ReorderLevel)\",\n  \"explanation\": \"This SQL query selects the 'ProductID' and 'UnitPrice' from the \\\"Order Details\\\" table where for each product, it calculates revenue by multiplying Quantity with UnitPrice. It then filters these products to only include those whose total calculated revenue plus sum of UnitsInStock (from a subquery that joins Orders and OrderDetails) and UnitsOnOrder is less than the ReorderLevel.\",\n  \"expected_columns\": [\n    \"ProductID\",\n    \"UnitPrice\"\n  ]\n}\n```"
+    ],
+    "parsed": {
+      "sql_query": "SELECT ProductID, UnitPrice FROM \"Order Details\" WHERE Quantity * UnitPrice + (SELECT COALESCE(SUM(od.UnitsInStock), 0) + SUM(od.UnitsOnOrder) FROM Orders o JOIN OrderDetails od ON o.OrderID = od.OrderID GROUP BY ProductID HAVING SUM(Quantity * UnitPrice) < ReorderLevel)",
+      "explanation": "This SQL query selects the 'ProductID' and 'UnitPrice' from the \"Order Details\" table where for each product, it calculates revenue by multiplying Quantity with UnitPrice. It then filters these products to only include those whose total calculated revenue plus sum of UnitsInStock (from a subquery that joins Orders and OrderDetails) and UnitsOnOrder is less than the ReorderLevel.",
+      "expected_columns": [
+        "ProductID",
+        "UnitPrice"
+      ]
+    }
+  }
+}

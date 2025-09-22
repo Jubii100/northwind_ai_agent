@@ -1,0 +1,31 @@
+{
+  "timestamp": "20250922_122034_243783",
+  "component": "SQLGenerator",
+  "prompt": {
+    "instruction": "Generate valid SQLite SQL using ONLY the exact table/column names from schema_info. RULES: 1) Quote table names with spaces: \"Order Details\" 2) Use Products.UnitPrice not Price 3) Use od.Quantity * od.UnitPrice for revenue calculations 4) Use strftime('%Y', date_col) = 'YYYY' for year filtering 5) No GROUP BY for simple SUM. Return clean SQL without code blocks.",
+    "question": "Count of orders in 1997 where ShippedDate occurred more than 3 days after OrderDate. Return an integer.",
+    "schema_info": "Table \"Order Details\" {\n  \"OrderID\" INTEGER [primary key, not null]\n  \"ProductID\" INTEGER [primary key, not null]\n  \"UnitPrice\" NUMERIC [not null, default: 0]\n  \"Quantity\" INTEGER [not null, default: 1]\n  \"Discount\" REAL [not null, default: 0]\n}\nTable \"Orders\" {\n  \"OrderID\" INTEGER [primary key, not null]\n  \"CustomerID\" TEXT\n  \"EmployeeID\" INTEGER\n  \"OrderDate\" DATETIME\n}",
+    "ontological_blocks": [],
+    "previous_sql": "",
+    "error_message": "",
+    "schema": {
+      "sql_query": "string",
+      "explanation": "string",
+      "expected_columns": [
+        "string"
+      ]
+    }
+  },
+  "response": {
+    "raw": [
+      "```json\n{\n  \"sql_query\": \"SELECT COUNT(*) FROM \\\"Order Details\\\" od JOIN \\\"Orders\\\" o ON od.OrderID = o.OrderID WHERE strftime('%Y', o.OrderDate) = '1997' AND julianday(o.ShippedDate) - julianday(o.OrderDate) > 3\",\n  \"explanation\": \"This SQL query counts the number of orders in the year 1997 where there is a gap greater than three days between OrderDate and ShippedDate.\",\n  \"expected_columns\": [\n    \"COUNT(*)\"\n  ]\n}\n```\n"
+    ],
+    "parsed": {
+      "sql_query": "SELECT COUNT(*) FROM \"Order Details\" od JOIN \"Orders\" o ON od.OrderID = o.OrderID WHERE strftime('%Y', o.OrderDate) = '1997' AND julianday(o.ShippedDate) - julianday(o.OrderDate) > 3",
+      "explanation": "This SQL query counts the number of orders in the year 1997 where there is a gap greater than three days between OrderDate and ShippedDate.",
+      "expected_columns": [
+        "COUNT(*)"
+      ]
+    }
+  }
+}

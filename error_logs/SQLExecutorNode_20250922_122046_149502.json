@@ -1,0 +1,1 @@
+{"timestamp": "20250922_122046_149502", "component": "SQLExecutorNode", "error": "No SQL query generated", "details": {"question_id": "sql_top3_products_by_revenue_alltime", "query": "", "row_count": 0}}

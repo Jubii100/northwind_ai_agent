@@ -1,0 +1,59 @@
+{
+  "timestamp": "20250922_122046_148644",
+  "component": "SQLGenerator",
+  "prompt": {
+    "instruction": "Generate valid SQLite SQL using ONLY the exact table/column names from schema_info. RULES: 1) Quote table names with spaces: \"Order Details\" 2) Use Products.UnitPrice not Price 3) Use od.Quantity * od.UnitPrice for revenue calculations 4) Use strftime('%Y', date_col) = 'YYYY' for year filtering 5) No GROUP BY for simple SUM. Return clean SQL without code blocks.",
+    "question": "Top 3 products by total revenue all-time. Revenue uses Order Details: SUM(UnitPrice*Quantity*(1-Discount)). Return list[{product:str, revenue:float}].",
+    "schema_info": "Table \"Order Details\" {\n  \"OrderID\" INTEGER [primary key, not null]\n  \"ProductID\" INTEGER [primary key, not null]\n  \"UnitPrice\" NUMERIC [not null]\n  \"Quantity\" INTEGER [not null]\n  \"Discount\" REAL [not null]\n}\nTable \"Orders\" {\n  \"OrderID\" INTEGER [primary key, not null]\n  \"CustomerID\" TEXT\n  \"EmployeeID\" INTEGER\n}\nTable \"Products\" {\n  \"ProductID\" INTEGER [primary key, not null]\n}",
+    "ontological_blocks": [
+      {
+        "content": "Order Details table with SUM(UnitPrice*Quantity*(1-Discount)) calculation for revenue",
+        "tags": [
+          "Table",
+          "Calculation"
+        ]
+      },
+      {
+        "content": "Products and Categories tables to identify top products by category",
+        "tags": [
+          "Tables",
+          "Relationship",
+          "Category Identification"
+        ]
+      },
+      {
+        "content": "Orders table with OrderID, CustomerID, EmployeeID for joining orders data",
+        "tags": [
+          "Table",
+          "Joining Data"
+        ]
+      },
+      {
+        "content": "Customers and Employees tables to identify customer demographics related to employees handling the order",
+        "tags": [
+          "Tables",
+          "Relationship",
+          "Customer Demographics Analysis"
+        ]
+      }
+    ],
+    "previous_sql": "",
+    "error_message": "",
+    "schema": {
+      "sql_query": "string",
+      "explanation": "string",
+      "expected_columns": [
+        "string"
+      ]
+    }
+  },
+  "response": {
+    "raw": [
+      "```json\n{\n  \"sql_query\": \"SELECT p.ProductID, SUM(od.Quantity * od.UnitPrice * (1 - od.Discount)) AS revenue FROM \\\"Order Details\\\" od JOIN Products p ON od.ProductID = p.ProductID GROUP BY p.ProductID ORDER BY revenue DESC LIMIT 3;\",\n  \"explan=/\"expected_columns\": [\n    \"ProductID\",\n    \"revenue\"\n  ]\n}\n```\nExplanation: The SQL query joins the 'Order Details' table with the 'Products' table on ProductID to calculate revenue for each product. It then groups results by ProductID, orders them in descending order of calculated revenue and limits output to top 3 products using LIMIT clause. Expected columns are \"ProductID\" which identifies unique products from both tables involved in calculations, and 'revenue' representing the total generated income per product after applying discounts on each sale recorded in Order Details table.\n"
+    ],
+    "parsed": [
+      "ProductID",
+      "revenue"
+    ]
+  }
+}

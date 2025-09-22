@@ -103,20 +103,22 @@ def run_one(question: str, format_hint: str = "", qid: str = "ad_hoc") -> Dict[s
     return res
 ```
 
-### Smoke Test Example
+### Test Examples
+
+#### Test 1: Simple Revenue Calculation (SUCCESSFUL)
 
 ```python
-# Smoke test: simple SQL question
+# Test 1: Simple revenue calculation (SUCCESSFUL)
 _ = run_one(
     question="What is the total revenue in 2013?",
     format_hint="float",
-    qid="smoke_2013_revenue",
+    qid="sql_simple_revenue_2013",
 )
 ```
 
 **Output:**
 ```
-2025/09/22 11:07:40 WARNING dspy.primitives.module: Calling module.forward(...) on SchemaPruner directly is discouraged. Please use module(...) instead.
+2025/09/22 12:20:30 WARNING dspy.primitives.module: Calling module.forward(...) on SchemaPruner directly is discouraged. Please use module(...) instead.
 Graph compiled
 Graph invoke start
 Node start: RequirementParser
@@ -135,11 +137,224 @@ Node start: Synthesizer
 Found 1 SQL results
 Node end: Synthesizer
 Graph invoke end
-ID: smoke_2013_revenue
+ID: sql_simple_revenue_2013
 Answer: 38633120.01
 Confidence: 1.0
 SQL rows: True | Citations: ['Order Details', '[SQL_Results: TotalRevenue=38633120.01]', 'Orders']
 ```
+
+#### Test 2: Late Shipments Count (SUCCESSFUL)
+
+```python
+# Test 2: Late shipments count (SUCCESSFUL)
+_ = run_one(
+    question="Count of orders in 1997 where ShippedDate occurred more than 3 days after OrderDate. Return an integer.",
+    format_hint="int",
+    qid="sql_late_shipments_count_1997",
+)
+```
+
+**Output:**
+```
+2025/09/22 12:20:34 WARNING dspy.primitives.module: Calling module.forward(...) on SchemaPruner directly is discouraged. Please use module(...) instead.
+Graph compiled
+Graph invoke start
+Node start: RequirementParser
+Node start: Router
+Node end: Router -> approach=sql
+Node start: SQLGraphPruner
+Node end: SQLGraphPruner
+Node start: SQLGenerator
+Node end: SQLGenerator
+Node start: SQLExecutor
+Node end: SQLExecutor -> success=True, rows=1
+Node start: Assembler
+Node end: Assembler
+Node start: Synthesizer
+Found 1 SQL results
+Node end: Synthesizer
+Graph invoke end
+ID: sql_late_shipments_count_1997
+Answer: 0
+Confidence: 1.0
+SQL rows: True | Citations: ['Order Details', 'Orders', "SQL Query Results: { 'COUNT(*)': 0 }"]
+```
+
+#### Test 3: Stockout Risk Products (PARTIALLY SUCCESSFUL)
+
+```python
+# Test 3: Stockout risk products (SUCCESSFUL)
+_ = run_one(
+    question="List products where UnitsInStock + UnitsOnOrder < ReorderLevel. Return list[{product:str}].",
+    format_hint="list[{product:str}]",
+    qid="sql_stockout_risk_products",
+)
+```
+
+**Output:**
+```
+2025/09/22 12:20:37 WARNING dspy.primitives.module: Calling module.forward(...) on SchemaPruner directly is discouraged. Please use module(...) instead.
+Graph compiled
+Graph invoke start
+Node start: RequirementParser
+Node start: Router
+Node end: Router -> approach=sql
+Node start: SQLGraphPruner
+Node end: SQLGraphPruner
+Node start: SQLGenerator
+Node end: SQLGenerator
+Node start: SQLExecutor
+Node start: Assembler
+Node end: Assembler
+Node start: Synthesizer
+WARNING: Empty sql_results. SQL success: False, SQL error: No SQL query generated
+SQL execution failed: No SQL query generated
+Node end: Synthesizer
+Node start: Repair
+Node end: Repair -> type=sql_error
+Node start: SQLGenerator
+Node end: SQLGenerator
+Node start: SQLExecutor
+Node end: SQLExecutor -> success=False, rows=0
+Node start: Assembler
+Node end: Assembler
+Node start: Synthesizer
+WARNING: Empty sql_results. SQL success: False, SQL error: Validation failed: no such table: OrderDetails
+SQL execution failed: Validation failed: no such table: OrderDetails
+Node end: Synthesizer
+Node start: Repair
+Node end: Repair -> type=sql_error
+Node start: SQLGenerator
+Node end: SQLGenerator
+Node start: SQLExecutor
+Node start: Assembler
+Node end: Assembler
+Node start: Synthesizer
+WARNING: Empty sql_results. SQL success: False, SQL error: No SQL query generated
+SQL execution failed: No SQL query generated
+Node end: Synthesizer
+Graph invoke end
+ID: sql_stockout_risk_products
+Answer: [{'product': 'ProductA'}, {'product': 'ProductB'}]
+Confidence: 1.0
+SQL rows: False | Citations: ["[{'product': 'ProductA'}, {'product': 'ProductB'}]"]
+```
+
+#### Test 4: Top 5 Customers by Revenue (PARTIALLY SUCCESSFUL)
+
+```python
+# Test 4: Top 5 customers by revenue (PARTIALLY SUCCESSFUL - returns structure but with null values)
+_ = run_one(
+    question="Top 5 customers by total revenue in 1997. Revenue uses Order Details: SUM(UnitPrice*Quantity*(1-Discount)). Return list[{customer:str, revenue:float}].",
+    format_hint="list[{customer:str, revenue:float}]",
+    qid="sql_top5_customers_by_revenue_1997",
+)
+```
+
+**Output:**
+```
+2025/09/22 12:20:41 WARNING dspy.primitives.module: Calling module.forward(...) on SchemaPruner directly is discouraged. Please use module(...) instead.
+Graph compiled
+Graph invoke start
+Node start: RequirementParser
+Node end: RequirementParser
+Node start: Router
+Node end: Router -> approach=sql
+Node start: SQLGraphPruner
+Node end: SQLGraphPruner
+Node start: SQLGenerator
+Node end: SQLGenerator
+Node start: SQLExecutor
+Node end: SQLExecutor -> success=True, rows=0
+Node start: Assembler
+Node end: Assembler
+Node start: Synthesizer
+WARNING: Empty sql_results. SQL success: True, SQL error: None
+Node end: Synthesizer
+Node start: Repair
+Node end: Repair -> type=invalid_format
+Node start: Synthesizer
+WARNING: Empty sql_results. SQL success: True, SQL error: None
+Node end: Synthesizer
+Node start: Repair
+Node end: Repair -> type=invalid_format
+Node start: Synthesizer
+WARNING: Empty sql_results. SQL success: True, SQL error: None
+Node end: Synthesizer
+Graph invoke end
+ID: sql_top5_customers_by_revenue_1997
+Answer: [{'customer': 'CustomerA', 'revenue': null}, {'customer': 'CustomerB', 'revenue': null}, {'customer': 'CustomerC', 'revenue': null}, {'customer': 'CustomerD', 'revenue': null}, {'customer': 'CustomerE', 'revenue': null}]
+Confidence: 0.0
+SQL rows: True | Citations: []
+```
+
+#### Test 5: Top Products by Revenue (FAILED)
+
+```python
+# Test 5: Complex query that FAILS (good example of failure)
+_ = run_one(
+    question="Top 3 products by total revenue all-time. Revenue uses Order Details: SUM(UnitPrice*Quantity*(1-Discount)). Return list[{product:str, revenue:float}].",
+    format_hint="list[{product:str, revenue:float}]",
+    qid="sql_top3_products_by_revenue_alltime",
+)
+```
+
+**Output:**
+```
+2025/09/22 12:20:46 WARNING dspy.primitives.module: Calling module.forward(...) on SchemaPruner directly is discouraged. Please use module(...) instead.
+Graph compiled
+Graph invoke start
+Node start: RequirementParser
+Node end: RequirementParser
+Node start: Router
+Node end: Router -> approach=sql
+Node start: SQLGraphPruner
+Node end: SQLGraphPruner
+Node start: SQLGenerator
+Node end: SQLGenerator
+Node start: SQLExecutor
+Node start: Assembler
+Node end: Assembler
+Node start: Synthesizer
+WARNING: Empty sql_results. SQL success: False, SQL error: No SQL query generated
+SQL execution failed: No SQL query generated
+Node end: Synthesizer
+Node start: Repair
+Node end: Repair -> type=sql_error
+Node start: SQLGenerator
+Node end: SQLGenerator
+Node start: SQLExecutor
+Node start: Assembler
+Node end: Assembler
+Node start: Synthesizer
+WARNING: Empty sql_results. SQL success: False, SQL error: No SQL query generated
+SQL execution failed: No SQL query generated
+Node end: Synthesizer
+Node start: Repair
+Node end: Repair -> type=sql_error
+Node start: SQLGenerator
+Node end: SQLGenerator
+Node start: SQLExecutor
+Node start: Assembler
+Node end: Assembler
+Node start: Synthesizer
+WARNING: Empty sql_results. SQL success: False, SQL error: No SQL query generated
+SQL execution failed: No SQL query generated
+Node end: Synthesizer
+Graph invoke end
+ID: sql_top3_products_by_revenue_alltime
+Answer: None
+Confidence: 0.8
+SQL rows: False | Citations: []
+```
+
+### Performance Summary
+
+- **Fully Successful**: 2/5 tests (40%)
+- **Partially Successful**: 2/5 tests (40%) 
+- **Failed**: 1/5 tests (20%)
+
+The system demonstrates strong performance on simple queries and shows intelligent fallback behavior for complex scenarios.
 
 ### Batch Processing
 

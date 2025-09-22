@@ -1,0 +1,47 @@
+{
+  "timestamp": "20250922_122041_467463",
+  "component": "RequirementParser",
+  "prompt": {
+    "instruction": "Extract useful ontological blocks to achieve the required answer from the database and documents, expected answer type, and constraints.",
+    "question": "Top 5 customers by total revenue in 1997. Revenue uses Order Details: SUM(UnitPrice*Quantity*(1-Discount)). Return list[{customer:str, revenue:float}].",
+    "format_hint": "list[{customer:str, revenue:float}]",
+    "db_diagram": "Table \"Categories\" {\n  \"CategoryID\" INTEGER [primary key]\n  \"CategoryName\" TEXT\n  \"Description\" TEXT\n  \"Picture\" BLOB\n}\nTable \"CustomerCustomerDemo\" {\n  \"CustomerID\" TEXT [primary key, not null]\n  \"CustomerTypeID\" TEXT [primary key, not null]\n}\nTable \"CustomerDemographics\" {\n  \"CustomerTypeID\" TEXT [primary key, not null]\n  \"CustomerDesc\" TEXT\n}\nTable \"Customers\" {\n  \"CustomerID\" TEXT [primary key]\n  \"CompanyName\" TEXT\n  \"ContactName\" TEXT\n  \"ContactTitle\" TEXT\n  \"Address\" TEXT\n  \"City\" TEXT\n  \"Region\" TEXT\n  \"PostalCode\" TEXT\n  \"Country\" TEXT\n  \"Phone\" TEXT\n  \"Fax\" TEXT\n}\nTable \"EmployeeTerritories\" {\n  \"EmployeeID\" INTEGER [primary key, not null]\n  \"TerritoryID\" TEXT [primary key, not null]\n}\nTable \"Employees\" {\n  \"EmployeeID\" INTEGER [primary key]\n  \"LastName\" TEXT\n  \"FirstName\" TEXT\n  \"Title\" TEXT\n  \"TitleOfCourtesy\" TEXT\n  \"BirthDate\" DATE\n  \"HireDate\" DATE\n  \"Address\" TEXT\n  \"City\" TEXT\n  \"Region\" TEXT\n  \"PostalCode\" TEXT\n  \"Country\" TEXT\n  \"HomePhone\" TEXT\n  \"Extension\" TEXT\n  \"Photo\" BLOB\n  \"Notes\" TEXT\n  \"ReportsTo\" INTEGER\n  \"PhotoPath\" TEXT\n}\nTable \"Order Details\" {\n  \"OrderID\" INTEGER [primary key, not null]\n  \"ProductID\" INTEGER [primary key, not null]\n  \"UnitPrice\" NUMERIC [not null, default: 0]\n  \"Quantity\" INTEGER [not null, default: 1]\n  \"Discount\" REAL [not null, default: 0]\n}\nTable \"Orders\" {\n  \"OrderID\" INTEGER [primary key, not null]\n  \"CustomerID\" TEXT\n  \"EmployeeID\" INTEGER\n  \"OrderDate\" DATETIME\n  \"RequiredDate\" DATETIME\n  \"ShippedDate\" DATETIME\n  \"ShipVia\" INTEGER\n  \"Freight\" NUMERIC [default: 0]\n  \"ShipName\" TEXT\n  \"ShipAddress\" TEXT\n  \"ShipCity\" TEXT\n  \"ShipRegion\" TEXT\n  \"ShipPostalCode\" TEXT\n  \"ShipCountry\" TEXT\n}\nTable \"Products\" {\n  \"ProductID\" INTEGER [primary key, not null]\n  \"ProductName\" TEXT [not null]\n  \"SupplierID\" INTEGER\n  \"CategoryID\" INTEGER\n  \"QuantityPerUnit\" TEXT\n  \"UnitPrice\" NUMERIC [default: 0]\n  \"UnitsInStock\" INTEGER [default: 0]\n  \"UnitsOnOrder\" INTEGER [default: 0]\n  \"ReorderLevel\" INTEGER [default: 0]\n  \"Discontinued\" TEXT [not null, default: '0']\n}\nTable \"Regions\" {\n  \"RegionID\" INTEGER [primary key, not null]\n  \"RegionDescription\" TEXT [not null]\n}\nTable \"Shippers\" {\n  \"ShipperID\" INTEGER [primary key, not null]\n  \"CompanyName\" TEXT [not null]\n  \"Phone\" TEXT\n}\nTable \"Suppliers\" {\n  \"SupplierID\" INTEGER [primary key, not null]\n  \"CompanyName\" TEXT [not null]\n  \"ContactName\" TEXT\n  \"ContactTitle\" TEXT\n  \"Address\" TEXT\n  \"City\" TEXT\n  \"Region\" TEXT\n  \"PostalCode\" TEXT\n  \"Country\" TEXT\n  \"Phone\" TEXT\n  \"Fax\" TEXT\n  \"HomePage\" TEXT\n}\nTable \"Territories\" {\n  \"TerritoryID\" TEXT [primary key, not null]\n  \"TerritoryDescription\" TEXT [not null]\n  \"RegionID\" INTEGER [not null]\n}\nRef: \"CustomerCustomerDemo\".\"CustomerTypeID\" > \"CustomerDemographics\".\"CustomerTypeID\"\nRef: \"CustomerCustomerDemo\".\"CustomerID\" > \"Customers\".\"CustomerID\"\nRef: \"EmployeeTerritories\".\"TerritoryID\" > \"Territories\".\"TerritoryID\"\nRef: \"EmployeeTerritories\".\"EmployeeID\" > \"Employees\".\"EmployeeID\"\nRef: \"Employees\".\"ReportsTo\" > \"Employees\".\"EmployeeID\"\nRef: \"Order Details\".\"ProductID\" > \"Products\".\"ProductID\"\nRef: \"Order Details\".\"OrderID\" > \"Orders\".\"OrderID\"\nRef: \"Orders\".\"ShipVia\" > \"Shippers\".\"ShipperID\"\nRef: \"Orders\".\"CustomerID\" > \"Customers\".\"CustomerID\"\nRef: \"Orders\".\"EmployeeID\" > \"Employees\".\"EmployeeID\"\nRef: \"Products\".\"SupplierID\" > \"Suppliers\".\"SupplierID\"\nRef: \"Products\".\"CategoryID\" > \"Categories\".\"CategoryID\"\nRef: \"Territories\".\"RegionID\" > \"Regions\".\"RegionID\"",
+    "docs_overview": "File: catalog.md\n# Catalog Snapshot\n- Categories include Beverages, Condiments, Confections, Dairy Products, Grains/Cereals, Meat/Poultry, Produce, Seafood.\n- Products map to categories as in the Northwind DB.\n\n\n---\n\nFile: kpi_definitions.md\n# KPI Definitions\n## Average Order Value (AOV)\n- AOV = SUM(UnitPrice * Quantity * (1 - Discount)) / COUNT(DISTINCT OrderID)\n\n## Gross Margin\n- GM = SUM((UnitPrice - CostOfGoods) * Quantity * (1 - Discount))\n- If cost is missing, approximate with category-level average (document your approach).\n\n\n---\n\nFile: marketing_calendar.md\n# Northwind Marketing Calendar (1997)\n\n## Summer Beverages 1997\n- Dates: 1997-06-01 to 1997-06-30\n- Notes: Focus on Beverages and Condiments.\n\n## Winter Classics 1997\n- Dates: 1997-12-01 to 1997-12-31\n- Notes: Push Dairy Products and Confections for holiday gifting.\n\n\n---\n\nFile: product_policy.md\n# Returns & Policy\n- Perishables (Produce, Seafood, Dairy): 3–7 days.\n- Beverages unopened: 14 days; opened: no returns.\n- Non-perishables: 30 days.\n",
+    "schema": {
+      "ontological_blocks": [
+        {
+          "content": "string",
+          "tags": [
+            "string"
+          ]
+        }
+      ],
+      "expected_answer_type": "string",
+      "date_ranges": [
+        "string"
+      ],
+      "kpi_formulas": [
+        "string"
+      ],
+      "categories_entities": [
+        {
+          "content": "string",
+          "tags": [
+            "string"
+          ]
+        }
+      ]
+    }
+  },
+  "response": {
+    "raw": [
+      "{\n  \"ontological_blocks\": [\n    {\n      \"content\": \"Table \\\"Orders\\\" {\\n  \\\"OrderID\\\" INTEGER [primary key, not null]\\n  \\\"CustomerID\\\" TEXT\\n  \\\"EmployeeID\\\" INTEGER\\n  \\\"OrderDate\\\" DATETIME\\n  \\\"RequiredDate\\\" DATETIME\\n  \\\"ShippedDate\\\" DATETIME\\n  \\\"ShipVia\\\" INTEGER\\n  \\\"Freight\\\" NUMERIC [default: 0]\\n  \\\"ShipName\\\" TEXT\\n  \\\"ShipAddress\\\" TEXT\\n  \\\"ShipCity\\\" TEXT\\n  \\\"ShipRegion\\\" TEXT\\n  \\\"ShipPostalCode\\\" TEXT\\n  \\\"ShipCountry\\\" TEXT\",\n      \"tags\": [\n        \"Orders\"\n      ]\n    },\n    {\n      \"content\": \"Table \\\"Products\\\" {\\n  \\\"ProductID\\\" INTEGER [primary key, not null]\\n  \\\"ProductName\\\" TEXT [not null]\\n  \\\"SupplierID\\\" INTEGER\\n  \\\"CategoryID\\\" INTEGER\",\n      \"tags\": [\n        \"Products\"\n      ]\n    },\n    {\n      \"content\": \"Table \\\"Categories\\\" {\\n  \\\"CategoryID\\\" INTEGER [primary key]\\n  \\\"CategoryName\\\" TEXT\\n  \\\"Description\\\" TEXT\\n  \\\"Picture\\\" BLOB\",\n      \"tags\": [\n        \"Categories\"\n      ]\n    },\n    {\n      \"content\": \"Table \\\"CustomerDemographics\\\" {\\n  \\\"CustomerTypeID\\\" TEXT [primary key, not null]\\n  \\\"CustomerDesc\\\" TEXT\\n}\",\n      \"tags\": [\n        \"CustomerDemographics\"\n      ]\n    },\n    {\n      \"content\": \"Table \\\"Customers\\\" {\\n  \\\"CustomerID\\\" TEXT\\n  \\\"CompanyName\\\" TEXT\\n  \\\"ContactName\\\" TEXT\\n  \\\"ContactTitle\\\" TEXT\\n  \\\"Address\\\" TEXT\\n  \\\"City\\\" TEXT\\n  \\\"Region\\\" TEXT\\n  \\\"PostalCode\\\" TEXT\\n  \\\"Country\\\" TEXT\",\n      \"tags\": [\n        \"Customers\"\n      ]\n    },\n    {\n      \"content\": \"Table \\\"EmployeeTerritories\\\" {\\n  \\\"EmployeeID\\\" INTEGER [primary key, not null]\\n  \\\"TerritoryID\\\" TEXT [primary key, not null]\",\n      \"tags\": [\n        \"EmployeeTerritories\"\n      ]\n    },\n    {\n      \"content\": \"Table \\\"Employees\\\" {\\n  \\\"EmployeeID\\\" INTEGER\\n  \\\"LastName\\\" TEXT\\n  \\\"FirstName\\\" TEXT\\n  \\\"Title\\\" TEXT\\n  \\\"TitleOfCourtesy\\\" TEXT\\n  \\\"BirthDate\\\" DATE\\n  \\\"HireDate\\\" DATE\\n  \\\"Address\\\" TEXT\\n  \\\"City\\\" TEXT\\n  \\\"Region\\\" TEXT\\n  \\\"PostalCode\\\" TEXT\\n  \\\"Country\\\" TEXT\\n  \\\"HomePhone\\\" TEXT\\n  \\\"Extension\\\" TEXT\",\n      \"tags\": [\n        \"Employees\"\n      ]\n    },\n    {\n      \"content\": \"Table \\\"Order Details\\\" {\\n  \\\"OrderID\\\" INTEGER [primary key, not null]\\n  \\\"ProductID\\\" INTEGER\\n  \\\"UnitPrice\\\" NUMERIC\\n  \\\"Quantity\\\" INTEGER\\n  \\\"Discount\\\" REAL\",\n      \"tags\": [\n        \"Order Details\"\n      ]\n    },\n    {\n      \"content\": \"Table \\\"Regions\\\" {\\n  \\\"RegionID\\\" INTEGER [primary key, not null]\\n  \\\"RegionDescription\\\" TEXT [not null]\",\n      \"tags\": [\n        \"Regions\"\n      ]\n    },\n    {\n      \"content\": \"Ref: \\\"CustomerDemographics\\\".\\\"CustomerTypeID\\\" > \\\"CustomerDemographics\\\".\\\"CustomerDesc\\\"\",\n      \"tags\": [\n        \"Referential Integrity Relationship Customer Demographics\"\n      ]\n    },\n    {\n      \"content\": \"Ref: \\\"Order Details\\\".\\\"ProductID\\\" > \\\"Products"
+    ],
+    "parsed": {
+      "content": "Table \"Products\" {\n  \"ProductID\" INTEGER [primary key, not null]\n  \"ProductName\" TEXT [not null]\n  \"SupplierID\" INTEGER\n  \"CategoryID\" INTEGER",
+      "tags": [
+        "Products"
+      ]
+    }
+  }
+}

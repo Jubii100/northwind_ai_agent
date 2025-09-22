@@ -1,5 +1,5 @@
 {
-  "timestamp": "20250922_110740_870340",
+  "timestamp": "20250922_122030_739867",
   "component": "SQLGenerator",
   "prompt": {
     "instruction": "Generate valid SQLite SQL using ONLY the exact table/column names from schema_info. RULES: 1) Quote table names with spaces: \"Order Details\" 2) Use Products.UnitPrice not Price 3) Use od.Quantity * od.UnitPrice for revenue calculations 4) Use strftime('%Y', date_col) = 'YYYY' for year filtering 5) No GROUP BY for simple SUM. Return clean SQL without code blocks.",

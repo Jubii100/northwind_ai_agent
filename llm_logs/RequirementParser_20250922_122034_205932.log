@@ -1,0 +1,85 @@
+{
+  "timestamp": "20250922_122034_205932",
+  "component": "RequirementParser",
+  "prompt": {
+    "instruction": "Extract useful ontological blocks to achieve the required answer from the database and documents, expected answer type, and constraints.",
+    "question": "Count of orders in 1997 where ShippedDate occurred more than 3 days after OrderDate. Return an integer.",
+    "format_hint": "int",
+    "db_diagram": "Table \"Categories\" {\n  \"CategoryID\" INTEGER [primary key]\n  \"CategoryName\" TEXT\n  \"Description\" TEXT\n  \"Picture\" BLOB\n}\nTable \"CustomerCustomerDemo\" {\n  \"CustomerID\" TEXT [primary key, not null]\n  \"CustomerTypeID\" TEXT [primary key, not null]\n}\nTable \"CustomerDemographics\" {\n  \"CustomerTypeID\" TEXT [primary key, not null]\n  \"CustomerDesc\" TEXT\n}\nTable \"Customers\" {\n  \"CustomerID\" TEXT [primary key]\n  \"CompanyName\" TEXT\n  \"ContactName\" TEXT\n  \"ContactTitle\" TEXT\n  \"Address\" TEXT\n  \"City\" TEXT\n  \"Region\" TEXT\n  \"PostalCode\" TEXT\n  \"Country\" TEXT\n  \"Phone\" TEXT\n  \"Fax\" TEXT\n}\nTable \"EmployeeTerritories\" {\n  \"EmployeeID\" INTEGER [primary key, not null]\n  \"TerritoryID\" TEXT [primary key, not null]\n}\nTable \"Employees\" {\n  \"EmployeeID\" INTEGER [primary key]\n  \"LastName\" TEXT\n  \"FirstName\" TEXT\n  \"Title\" TEXT\n  \"TitleOfCourtesy\" TEXT\n  \"BirthDate\" DATE\n  \"HireDate\" DATE\n  \"Address\" TEXT\n  \"City\" TEXT\n  \"Region\" TEXT\n  \"PostalCode\" TEXT\n  \"Country\" TEXT\n  \"HomePhone\" TEXT\n  \"Extension\" TEXT\n  \"Photo\" BLOB\n  \"Notes\" TEXT\n  \"ReportsTo\" INTEGER\n  \"PhotoPath\" TEXT\n}\nTable \"Order Details\" {\n  \"OrderID\" INTEGER [primary key, not null]\n  \"ProductID\" INTEGER [primary key, not null]\n  \"UnitPrice\" NUMERIC [not null, default: 0]\n  \"Quantity\" INTEGER [not null, default: 1]\n  \"Discount\" REAL [not null, default: 0]\n}\nTable \"Orders\" {\n  \"OrderID\" INTEGER [primary key, not null]\n  \"CustomerID\" TEXT\n  \"EmployeeID\" INTEGER\n  \"OrderDate\" DATETIME\n  \"RequiredDate\" DATETIME\n  \"ShippedDate\" DATETIME\n  \"ShipVia\" INTEGER\n  \"Freight\" NUMERIC [default: 0]\n  \"ShipName\" TEXT\n  \"ShipAddress\" TEXT\n  \"ShipCity\" TEXT\n  \"ShipRegion\" TEXT\n  \"ShipPostalCode\" TEXT\n  \"ShipCountry\" TEXT\n}\nTable \"Products\" {\n  \"ProductID\" INTEGER [primary key, not null]\n  \"ProductName\" TEXT [not null]\n  \"SupplierID\" INTEGER\n  \"CategoryID\" INTEGER\n  \"QuantityPerUnit\" TEXT\n  \"UnitPrice\" NUMERIC [default: 0]\n  \"UnitsInStock\" INTEGER [default: 0]\n  \"UnitsOnOrder\" INTEGER [default: 0]\n  \"ReorderLevel\" INTEGER [default: 0]\n  \"Discontinued\" TEXT [not null, default: '0']\n}\nTable \"Regions\" {\n  \"RegionID\" INTEGER [primary key, not null]\n  \"RegionDescription\" TEXT [not null]\n}\nTable \"Shippers\" {\n  \"ShipperID\" INTEGER [primary key, not null]\n  \"CompanyName\" TEXT [not null]\n  \"Phone\" TEXT\n}\nTable \"Suppliers\" {\n  \"SupplierID\" INTEGER [primary key, not null]\n  \"CompanyName\" TEXT [not null]\n  \"ContactName\" TEXT\n  \"ContactTitle\" TEXT\n  \"Address\" TEXT\n  \"City\" TEXT\n  \"Region\" TEXT\n  \"PostalCode\" TEXT\n  \"Country\" TEXT\n  \"Phone\" TEXT\n  \"Fax\" TEXT\n  \"HomePage\" TEXT\n}\nTable \"Territories\" {\n  \"TerritoryID\" TEXT [primary key, not null]\n  \"TerritoryDescription\" TEXT [not null]\n  \"RegionID\" INTEGER [not null]\n}\nRef: \"CustomerCustomerDemo\".\"CustomerTypeID\" > \"CustomerDemographics\".\"CustomerTypeID\"\nRef: \"CustomerCustomerDemo\".\"CustomerID\" > \"Customers\".\"CustomerID\"\nRef: \"EmployeeTerritories\".\"TerritoryID\" > \"Territories\".\"TerritoryID\"\nRef: \"EmployeeTerritories\".\"EmployeeID\" > \"Employees\".\"EmployeeID\"\nRef: \"Employees\".\"ReportsTo\" > \"Employees\".\"EmployeeID\"\nRef: \"Order Details\".\"ProductID\" > \"Products\".\"ProductID\"\nRef: \"Order Details\".\"OrderID\" > \"Orders\".\"OrderID\"\nRef: \"Orders\".\"ShipVia\" > \"Shippers\".\"ShipperID\"\nRef: \"Orders\".\"CustomerID\" > \"Customers\".\"CustomerID\"\nRef: \"Orders\".\"EmployeeID\" > \"Employees\".\"EmployeeID\"\nRef: \"Products\".\"SupplierID\" > \"Suppliers\".\"SupplierID\"\nRef: \"Products\".\"CategoryID\" > \"Categories\".\"CategoryID\"\nRef: \"Territories\".\"RegionID\" > \"Regions\".\"RegionID\"",
+    "docs_overview": "File: catalog.md\n# Catalog Snapshot\n- Categories include Beverages, Condiments, Confections, Dairy Products, Grains/Cereals, Meat/Poultry, Produce, Seafood.\n- Products map to categories as in the Northwind DB.\n\n\n---\n\nFile: kpi_definitions.md\n# KPI Definitions\n## Average Order Value (AOV)\n- AOV = SUM(UnitPrice * Quantity * (1 - Discount)) / COUNT(DISTINCT OrderID)\n\n## Gross Margin\n- GM = SUM((UnitPrice - CostOfGoods) * Quantity * (1 - Discount))\n- If cost is missing, approximate with category-level average (document your approach).\n\n\n---\n\nFile: marketing_calendar.md\n# Northwind Marketing Calendar (1997)\n\n## Summer Beverages 1997\n- Dates: 1997-06-01 to 1997-06-30\n- Notes: Focus on Beverages and Condiments.\n\n## Winter Classics 1997\n- Dates: 1997-12-01 to 1997-12-31\n- Notes: Push Dairy Products and Confections for holiday gifting.\n\n\n---\n\nFile: product_policy.md\n# Returns & Policy\n- Perishables (Produce, Seafood, Dairy): 3–7 days.\n- Beverages unopened: 14 days; opened: no returns.\n- Non-perishables: 30 days.\n",
+    "schema": {
+      "ontological_blocks": [
+        {
+          "content": "string",
+          "tags": [
+            "string"
+          ]
+        }
+      ],
+      "expected_answer_type": "string",
+      "date_ranges": [
+        "string"
+      ],
+      "kpi_formulas": [
+        "string"
+      ],
+      "categories_entities": [
+        {
+          "content": "string",
+          "tags": [
+            "string"
+          ]
+        }
+      ]
+    }
+  },
+  "response": {
+    "raw": [
+      "{\n  \"ontological_blocks\": [\n    {\n      \"content\": \"Orders table with OrderDate and ShippedDate columns, filtered by Year(OrderDate) = '1997'\",\n      \"tags\": [\"table\", \"filtering\", \"date comparison\"]\n    },\n    {\n      \"content\": \"ShipVia column from Orders table to identify shipping method (assuming relevant for counting)\",\n      \"tags\": [\"column reference\", \"shipping information\"]\n    },\n    {\n      \"content\": \"Calculate the difference between ShippedDate and OrderDate in days, filtering where this value is greater than 3\",\n      \"tags\": [\"calculation\", \"date arithmetic\", \"filtering condition\"]\n    }\n  ],\n  \"expected_answer_type\": \"integer\",\n  \"date_ranges\": [\n    {\n      \"start_date\": \"1997-01-01\",\n      \"end_date\": \"1997-12-31\"\n    }\n  ],\n  \"kpi_formulas\": [],\n  \"categories_entities\": [\n    {\n      \"content\": \"Categories table with CategoryID and related Products, filtered by relevant categories for the query\",\n      \"tags\": [\"table reference\", \"category filtering\"]\n    }\n  ]\n}\n"
+    ],
+    "parsed": {
+      "ontological_blocks": [
+        {
+          "content": "Orders table with OrderDate and ShippedDate columns, filtered by Year(OrderDate) = '1997'",
+          "tags": [
+            "table",
+            "filtering",
+            "date comparison"
+          ]
+        },
+        {
+          "content": "ShipVia column from Orders table to identify shipping method (assuming relevant for counting)",
+          "tags": [
+            "column reference",
+            "shipping information"
+          ]
+        },
+        {
+          "content": "Calculate the difference between ShippedDate and OrderDate in days, filtering where this value is greater than 3",
+          "tags": [
+            "calculation",
+            "date arithmetic",
+            "filtering condition"
+          ]
+        }
+      ],
+      "expected_answer_type": "integer",
+      "date_ranges": [
+        {
+          "start_date": "1997-01-01",
+          "end_date": "1997-12-31"
+        }
+      ],
+      "kpi_formulas": [],
+      "categories_entities": [
+        {
+          "content": "Categories table with CategoryID and related Products, filtered by relevant categories for the query",
+          "tags": [
+            "table reference",
+            "category filtering"
+          ]
+        }
+      ]
+    }
+  }
+}
