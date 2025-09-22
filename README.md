@@ -116,7 +116,7 @@ _ = run_one(
 
 **Output:**
 ```
-2025/09/21 23:45:42 WARNING dspy.primitives.module: Calling module.forward(...) on SchemaPruner directly is discouraged. Please use module(...) instead.
+2025/09/22 11:07:40 WARNING dspy.primitives.module: Calling module.forward(...) on SchemaPruner directly is discouraged. Please use module(...) instead.
 Graph compiled
 Graph invoke start
 Node start: RequirementParser
@@ -128,54 +128,17 @@ Node end: SQLGraphPruner
 Node start: SQLGenerator
 Node end: SQLGenerator
 Node start: SQLExecutor
-SQL Query normalized from:
-SELECT SUM(OrderDetails.Quantity * Products.Price) AS TotalRevenue FROM Order Details INNER JOIN Orders ON Order Details.OrderID = Orders.OrderID INNER JOIN Products ON Order Details.ProductID = Products.ProductID WHERE strftForms('Orders'."OrderDate", 'YYYY') = 2013 GROUP BY YEAR(strFormats('Orders'."OrderDate", '%Y'))
-to:
-SELECT SUM("Order Details".Quantity * Products.Price) AS TotalRevenue FROM Order Details INNER JOIN Orders ON Order Details.OrderID = Orders.OrderID INNER JOIN Products ON Order Details.ProductID = Products.ProductID WHERE strftime('Orders'."OrderDate", '%Y') = '2013')
-Node end: SQLExecutor -> success=False, rows=0
+Node end: SQLExecutor -> success=True, rows=1
 Node start: Assembler
 Node end: Assembler
 Node start: Synthesizer
-WARNING: Empty sql_results. SQL success: False, SQL error: Validation failed: near "Order": syntax error
-SQL execution failed: Validation failed: near "Order": syntax error
-Node end: Synthesizer
-Node start: Repair
-Node end: Repair -> type=sql_error
-Node start: SQLGenerator
-Node end: SQLGenerator
-Node start: SQLExecutor
-SQL Query normalized from:
-SELECT SUM(OrderDetails.Quantity * Products.Price) AS TotalRevenue FROM "Order Details" INNER JOIN "Orders" ON "Order Details"."OrderID" = "Orders"."OrderID" INNER JOIN "Products" ON "Order Details"."ProductID" = "Products"."ProductID" WHERE strftime('%Y', Orders."OrderDate") = '2013' GROUP BY YEAR(strftime('%Y', Orders."OrderDate"))
-to:
-SELECT SUM("Order Details".Quantity * Products.Price) AS TotalRevenue FROM "Order Details" INNER JOIN "Orders" ON "Order Details"."OrderID" = "Orders"."OrderID" INNER JOIN "Products" ON "Order Details"."ProductID" = "Products"."ProductID" WHERE strftime('%Y', Orders."OrderDate") = '2013')
-Node end: SQLExecutor -> success=False, rows=0
-Node start: Assembler
-Node end: Assembler
-Node start: Synthesizer
-WARNING: Empty sql_results. SQL success: False, SQL error: Validation failed: near ")": syntax error
-SQL execution failed: Validation failed: near ")": syntax error
-Node end: Synthesizer
-Node start: Repair
-Node end: Repair -> type=sql_error
-Node start: SQLGenerator
-Node end: SQLGenerator
-Node start: SQLExecutor
-SQL Query normalized from:
-SELECT SUM(OrderDetails.Quantity * Products.Price) AS TotalRevenue FROM "Order Details" INNER JOIN "Orders" ON "Order Details"."OrderID" = "Orders"."OrderID" INNER JOIN "Products" ON "Order Details"."ProductID" = "Products"."ProductID" WHERE strftime('%Y', Orders."OrderDate") = '2013' GROUP BY YEAR(strftime('%Y', Orders."OrderDate"))
-to:
-SELECT SUM("Order Details".Quantity * Products.Price) AS TotalRevenue FROM "Order Details" INNER JOIN "Orders" ON "Order Details"."OrderID" = "Orders"."OrderID" INNER JOIN "Products" ON "Order Details"."ProductID" = "Products"."ProductID" WHERE strftime('%Y', Orders."OrderDate") = '2013')
-Node end: SQLExecutor -> success=False, rows=0
-Node start: Assembler
-Node end: Assembler
-Node start: Synthesizer
-WARNING: Empty sql_results. SQL success: False, SQL error: Validation failed: near ")": syntax error
-SQL execution failed: Validation failed: near ")": syntax error
+Found 1 SQL results
 Node end: Synthesizer
 Graph invoke end
 ID: smoke_2013_revenue
-Answer: None
-Confidence: 0.8
-SQL rows: True | Citations: []
+Answer: 38633120.01
+Confidence: 1.0
+SQL rows: True | Citations: ['Order Details', '[SQL_Results: TotalRevenue=38633120.01]', 'Orders']
 ```
 
 ### Batch Processing
