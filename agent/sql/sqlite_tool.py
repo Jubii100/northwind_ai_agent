@@ -167,36 +167,7 @@ class SQLExecutor:
                 conn.execute("PRAGMA foreign_keys = ON")
                 
                 cursor = conn.cursor()
-                # General normalization for common LLM SQL issues
-                import re
                 fixed_query = sql_query
-                # Normalize all strftime malformed variants (comprehensive patterns)
-                fixed_query = re.sub(r"strf[\s\-_]*time\s*\(", "strftime(", fixed_query, flags=re.IGNORECASE)
-                fixed_query = re.sub(r"strft[A-Z]*TIME", "strftime", fixed_query, flags=re.IGNORECASE)
-                fixed_query = re.sub(r"strftFRMAT[A-Z]*TIME", "strftime", fixed_query, flags=re.IGNORECASE)
-                # Normalize datepart-like patterns and wrong date functions
-                fixed_query = re.sub(r"\bDATEPART\s*\(\s*year\s*,", "strftime('%Y',", fixed_query, flags=re.IGNORECASE)
-                fixed_query = re.sub(r"\bYear\s*\(", "strftime('%Y', ", fixed_query, flags=re.IGNORECASE)
-                # Fix date format patterns - SQLite uses %Y not YYYY
-                fixed_query = re.sub(r"'YYYY'", "'%Y'", fixed_query)
-                fixed_query = re.sub(r'"YYYY"', "'%Y'", fixed_query)
-                # Fix year comparison - ensure string comparison
-                fixed_query = re.sub(r"= 1997\b", "= '1997'", fixed_query)
-                fixed_query = re.sub(r"= (\d{4})\b", r"= '\1'", fixed_query)
-                # Legacy specific typos (keep for backward compatibility)
-                fixed_query = fixed_query.replace("strftForms", "strftime").replace("STRFTFORMS", "strftime")
-                # Fix common table name issues with spaces
-                fixed_query = re.sub(r'\bOrderDetails\b', '"Order Details"', fixed_query)
-                # Fix invented columns - replace non-existent Revenue column with proper calculation
-                fixed_query = re.sub(r'\bo\.Revenue\b', '(od.Quantity * od.UnitPrice)', fixed_query)
-                fixed_query = re.sub(r'\bRevenue\b', '(od.Quantity * od.UnitPrice)', fixed_query)
-                # Remove unnecessary GROUP BY when doing aggregate without grouping
-                if 'SUM(' in fixed_query and 'GROUP BY strftime' in fixed_query:
-                    fixed_query = re.sub(r'\s+GROUP BY strftime\([^)]+\)', '', fixed_query)
-
-                # Debug logging to see query transformation
-                if fixed_query != sql_query:
-                    print(f"SQL Query normalized from:\n{sql_query}\nto:\n{fixed_query}")
 
                 # Pre-validation before execution
                 is_valid, err = self.validate_query(fixed_query)
@@ -211,8 +182,7 @@ class SQLExecutor:
                     else:
                         raise Exception(f"Validation failed: {err}")
 
-                # Execute normalized query
-                print(f"Executing final query: {fixed_query}")
+                # Execute query
                 cursor.execute(fixed_query)
                 
                 # Get column names
@@ -220,9 +190,6 @@ class SQLExecutor:
                 
                 # Get all rows
                 rows = cursor.fetchall()
-                
-                # Debug: Show raw results
-                print(f"Raw SQL results: columns={columns}, rows={rows}")
                 
                 return SQLResult(
                     columns=columns,

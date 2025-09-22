@@ -1,0 +1,58 @@
+{
+  "timestamp": "20250922_110740_870340",
+  "component": "SQLGenerator",
+  "prompt": {
+    "instruction": "Generate valid SQLite SQL using ONLY the exact table/column names from schema_info. RULES: 1) Quote table names with spaces: \"Order Details\" 2) Use Products.UnitPrice not Price 3) Use od.Quantity * od.UnitPrice for revenue calculations 4) Use strftime('%Y', date_col) = 'YYYY' for year filtering 5) No GROUP BY for simple SUM. Return clean SQL without code blocks.",
+    "question": "What is the total revenue in 2013?",
+    "schema_info": "Table \"Order Details\" {\n  \"OrderID\" INTEGER [primary key, not null]\n  \"ProductID\" INTEGER [primary key, not null]\n  \"UnitPrice\" NUMERIC [not null, default: 0]\n  \"Quantity\" INTEGER [not null, default: 1]\n  \"Discount\" REAL [not null, default: 0]\n}\nTable \"Orders\" {\n  \"OrderID\" INTEGER [primary key, not null]\n  \"CustomerID\" TEXT\n  \"EmployeeID\" INTEGER\n  \"OrderDate\" DATETIME\n}",
+    "ontological_blocks": [
+      {
+        "content": "Categories, ProductID, OrderDetails, Orders, CustomerCustomerDemo, EmployeeTerritories, Employees, Suppliers, Territories",
+        "tags": [
+          "database tables",
+          "relationships"
+        ]
+      },
+      {
+        "content": "Average Order Value (AOV), Gross Margin formulas",
+        "tags": [
+          "KPI definitions",
+          "formulas"
+        ]
+      },
+      {
+        "content": "[1997-06-01 to 1997-06-30] Summer Beverages, [1997-12-01 to 1997-12-31] Winter Classics",
+        "tags": [
+          "date ranges"
+        ]
+      },
+      {
+        "content": "[Categories: 'Beverages', ProductID], ['Dairy Products']",
+        "tags": [
+          "categories_entities"
+        ]
+      }
+    ],
+    "previous_sql": "",
+    "error_message": "",
+    "schema": {
+      "sql_query": "string",
+      "explanation": "string",
+      "expected_columns": [
+        "string"
+      ]
+    }
+  },
+  "response": {
+    "raw": [
+      "```json\n{\n  \"sql_query\": \"SELECT SUM(od.Quantity * od.UnitPrice) AS TotalRevenue FROM \\\"Order Details\\\" od JOIN Orders o ON od.OrderID = o.OrderID WHERE strftime('%Y', o.OrderDate) = '2013'\",\n  \"explanation\": \"This SQL query calculates the total revenue for all orders in the year 2013 by joining the Order Details table with the Orders table on their common column, which is OrderID.\",\n  \"expected_columns\": [\n    \"TotalRevenue\"\n  ]\n}\n```\n"
+    ],
+    "parsed": {
+      "sql_query": "SELECT SUM(od.Quantity * od.UnitPrice) AS TotalRevenue FROM \"Order Details\" od JOIN Orders o ON od.OrderID = o.OrderID WHERE strftime('%Y', o.OrderDate) = '2013'",
+      "explanation": "This SQL query calculates the total revenue for all orders in the year 2013 by joining the Order Details table with the Orders table on their common column, which is OrderID.",
+      "expected_columns": [
+        "TotalRevenue"
+      ]
+    }
+  }
+}

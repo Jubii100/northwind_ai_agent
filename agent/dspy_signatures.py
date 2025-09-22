@@ -372,9 +372,10 @@ class SQLGenerator(dspy.Module):
             "expected_columns": ["string"]
         }
         instruction = (
-            "Use ONLY schema_info. No new tables/columns. Use exact quoted names from schema_info including spaces. Return valid SQLite only. "
-            "For table names with spaces use quotes like Order Details table name. Never invent columns or aliases. Prefer strftime for year extraction. "
-            "expected_columns must match SELECT aliases exactly."
+            "Generate valid SQLite SQL using ONLY the exact table/column names from schema_info. "
+            "RULES: 1) Quote table names with spaces: \"Order Details\" 2) Use Products.UnitPrice not Price "
+            "3) Use od.Quantity * od.UnitPrice for revenue calculations 4) Use strftime('%Y', date_col) = 'YYYY' for year filtering "
+            "5) No GROUP BY for simple SUM. Return clean SQL without code blocks."
         )
         data = self._logger._lm_json(
             title="SQLGenerator",
@@ -501,11 +502,10 @@ class SchemaPruner(dspy.Module):
         }
         db_diagram = self._db_diagram()
         instruction = (
-            "Return JSON only: {\"pruned_schema\": \"...\"}. No code fences. "
-            "Inside pruned_schema, write a minimal diagram in the SAME format as db_diagram (Table \"...\" { ... } and Ref lines) using exact quoted names. "
-            "CRITICAL: Preserve table names with spaces like Order Details exactly as shown in db_diagram. "
-            "Avoid over-pruning: include not only the directly mentioned tables/columns in ontological_blocks, but also closely related tables (1-2 hops via foreign keys) that are likely needed for joins, filters (especially dates), or aggregations. "
-            "Include all relevant Ref lines among the included tables. Do NOT invent new tables or columns. Prefer slightly broader coverage over omission when uncertain."
+            "Return JSON: {\"pruned_schema\": \"...\"}. Copy EXACT table definitions from db_diagram. "
+            "Must include: Table \"Order Details\" with OrderID, ProductID, UnitPrice, Quantity columns. "
+            "Include Orders table with OrderID, OrderDate. Include Products table with ProductID, UnitPrice. "
+            "Copy column definitions exactly with proper types and constraints. Include relevant Ref lines."
         )
         data = self._logger._lm_json(
             title="SchemaPruner",
